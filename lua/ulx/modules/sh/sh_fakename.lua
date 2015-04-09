@@ -5,15 +5,11 @@
 local meta = FindMetaTable("Player") 
 
 function meta:SetFakename(name) 
-	if name and name != "" then 
-		self:SetNWString("ufakename_name", name) 
-	end 
+	self:SetNWString("ufakename_name", name) 
 end 
 
 function meta:SetFakegroup(group) 
-	if group and group != "" then 
-		self:SetNWString("ufakename_group", group) 
-	end 
+	self:SetNWString("ufakename_group", group) 
 end 
 
 function meta:RemoveFakename() 
@@ -31,6 +27,7 @@ function meta:Nick()
 end 
 
 function ulx.fakename(calling_ply, name, group) 
+	ulx.fancyLogAdmin(calling_ply, true, "#A fakenamed themselves #s in group #s", name, group) 
 	calling_ply:SetFakename(name) 
 	calling_ply:SetFakegroup(group) 
 end 
@@ -39,3 +36,12 @@ fakename:addParam{ type=ULib.cmds.StringArg, hint="fake name" }
 fakename:addParam{ type=ULib.cmds.StringArg, completes=ulx.group_names, hint="group", error="invalid group \"%s\" specified" }
 fakename:defaultAccess( ULib.ACCESS_SUPERADMIN )
 fakename:help( "Add a user to specified group." )
+
+function ulx.unfakename(calling_ply, name, group) 
+	calling_ply:SetFakename() 
+	calling_ply:SetFakegroup() 
+	ulx.fancyLogAdmin(calling_ply, true, "#A unfakenamed") 
+end 
+local unfakename = ulx.command( "Utility", "ulx unfakename", ulx.unfakename )
+unfakename:defaultAccess( ULib.ACCESS_SUPERADMIN )
+unfakename:help( "Add a user to specified group." )
