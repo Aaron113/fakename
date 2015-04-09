@@ -8,17 +8,28 @@ function meta:SetFakename(name)
 	self:SetNWString("ufakename_name", name) 
 end 
 
+oldGetUserGroup = meta.GetUserGroup 
+function meta:GetUserGroup() 
+	return self:GetNWString("ufakename_group", false) or oldGetUserGroup(self) 
+end 
+newGetUserGroup = meta.GetUserGroup 
+meta.GetUserGroup = oldGetUserGroup
+
 function meta:SetFakegroup(group) 
+	meta.GetUserGroup = newGetUserGroup 
 	self:SetNWString("ufakename_group", group) 
+	if ulx.teams then 
+		hook.GetTable().PlayerSpawn.UTeamSpawnAuth(self) 
+	end 
+	meta.GetUserGroup = oldGetUserGroup 
 end 
 
 function meta:RemoveFakename() 
 	self:SetNWString("ufakename_name", nil) 
-end 
-
-local oldGetUserGroup = meta.GetUserGroup 
-function meta:GetUserGroup() 
-	return self:GetNWString("ufakename_group", false) or oldGetUserGroup(self) 
+	self:SetNWString("ufakename_group", nil) 
+	if ulx.teams then 
+		hook.GetTable().PlayerSpawn.UTeamSpawnAuth(self) 
+	end 
 end 
 
 local oldnick = meta.Nick 
@@ -37,9 +48,8 @@ fakename:addParam{ type=ULib.cmds.StringArg, completes=ulx.group_names, hint="gr
 fakename:defaultAccess( ULib.ACCESS_SUPERADMIN )
 fakename:help( "Add a user to specified group." )
 
-function ulx.unfakename(calling_ply, name, group) 
-	calling_ply:SetFakename() 
-	calling_ply:SetFakegroup() 
+function ulx.unfakename(calling_ply) 
+	calling_ply:RemoveFakename() 
 	ulx.fancyLogAdmin(calling_ply, true, "#A unfakenamed") 
 end 
 local unfakename = ulx.command( "Utility", "ulx unfakename", ulx.unfakename )
