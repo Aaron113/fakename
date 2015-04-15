@@ -1,6 +1,6 @@
 "AddonInfo"
 {
-	"name" "UFakename"
+	"name" "Fakename"
 	"author_name" "xAaron113x"
 	"info" "Undercover system for ULX."
 }

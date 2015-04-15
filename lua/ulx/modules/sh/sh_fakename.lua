@@ -1,19 +1,19 @@
---------------------------- 
--- UFakename by Aaron113 -- 
---------------------------- 
+-------------------------- 
+-- Fakename by Aaron113 -- 
+-------------------------- 
 
 local meta = FindMetaTable("Player") 
 
 oldGetUserGroup = meta.GetUserGroup 
 function meta:GetUserGroup() 
-	return self:GetNWString("ufakename_group", false) or oldGetUserGroup(self) 
+	return self:GetNWString("fakename_group", false) or oldGetUserGroup(self) 
 end 
 newGetUserGroup = meta.GetUserGroup 
 meta.GetUserGroup = oldGetUserGroup
 
 local oldnick = meta.Nick 
 function meta:Nick() 
-	return self:GetNWString("ufakename_name", false) or oldnick(self) 
+	return self:GetNWString("fakename_name", false) or oldnick(self) 
 end 
 
 function meta:RealNick() 
@@ -21,12 +21,12 @@ function meta:RealNick()
 end 
 
 function meta:SetFakename(name) 
-	self:SetNWString("ufakename_name", name) 
+	self:SetNWString("fakename_name", name) 
 end 
 
 function meta:SetFakegroup(group) 
 	meta.GetUserGroup = newGetUserGroup 
-	self:SetNWString("ufakename_group", group) 
+	self:SetNWString("fakename_group", group) 
 	if ulx.teams then 
 		hook.GetTable().PlayerSpawn.UTeamSpawnAuth(self) 
 	end 
@@ -34,11 +34,11 @@ function meta:SetFakegroup(group)
 end 
 
 function meta:RemoveFakename() 
-	self:SetNWString("ufakename_name", false) 
+	self:SetNWString("fakename_name", false) 
 end 
 
 function meta:RemoveFakegroup() 
-	self:SetNWString("ufakename_group", false) 
+	self:SetNWString("fakename_group", false) 
 	if ulx.teams then 
 		hook.GetTable().PlayerSpawn.UTeamSpawnAuth(self) 
 	end 
@@ -50,7 +50,7 @@ function meta:ClearFakename()
 end 
 
 function meta:IsFakenamed() 
-	return self:GetNWString("ufakename_name", false) or self:GetNWString("ufakename_group", false) 
+	return self:GetNWString("fakename_name", false) or self:GetNWString("fakename_group", false) 
 end 
 
 function ulx.fakename(calling_ply, name, group) 
