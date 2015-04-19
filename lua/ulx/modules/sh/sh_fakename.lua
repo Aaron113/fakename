@@ -27,7 +27,7 @@ end
 function meta:SetFakegroup(group) 
 	meta.GetUserGroup = newGetUserGroup 
 	self:SetNWString("fakename_group", group) 
-	if ulx.teams then 
+	if hook.GetTable().PlayerSpawn.UTeamSpawnAuth then 
 		hook.GetTable().PlayerSpawn.UTeamSpawnAuth(self) 
 	end 
 	meta.GetUserGroup = oldGetUserGroup 
