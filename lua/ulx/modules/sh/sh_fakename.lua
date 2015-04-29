@@ -5,40 +5,56 @@
 local meta = FindMetaTable("Player") 
 
 oldGetUserGroup = meta.GetUserGroup 
-function meta:GetUserGroup() 
-	return self:GetNWString("fakename_group", false) or oldGetUserGroup(self) 
+function meta:GetUserGroup( b_realgroup ) 
+	if b_realgroup then 
+		return oldGetUserGroup(self) 
+	else  
+		return self:GetNWString("fake_group", false) or oldGetUserGroup(self)
+	end 
 end 
 newGetUserGroup = meta.GetUserGroup 
 meta.GetUserGroup = oldGetUserGroup
 
 local oldnick = meta.Nick 
-function meta:Nick() 
-	return self:GetNWString("fakename_name", false) or oldnick(self) 
+function meta:Nick( b_realnick ) 
+	if b_realnick then 
+		return oldnick(self) 
+	else 
+		return self:GetNWString("fake_name", false) or oldnick(self)
+	end  
 end 
+meta.Name = meta.Nick 
+meta.GetName = meta.Nick 
 
 function meta:RealNick() 
-	return oldnick(self) 
+	return self:Nick(true) 
 end 
 
-function meta:SetFakename(name) 
-	self:SetNWString("fakename_name", name) 
+function meta:SetFakename( name ) 
+	self:SetNWString("fake_name", name) 
+	hook.Call("OnFakeNameChanged") 
 end 
 
-function meta:SetFakegroup(group) 
+function meta:SetFakegroup( group ) 
 	meta.GetUserGroup = newGetUserGroup 
-	self:SetNWString("fakename_group", group) 
+	self:SetNWString("fake_group", group) 
+
+	-- set uteam to new group 
 	if hook.GetTable().PlayerSpawn.UTeamSpawnAuth then 
 		hook.GetTable().PlayerSpawn.UTeamSpawnAuth(self) 
 	end 
+
+	hook.Call("OnFakeGroupChanged")
+
 	meta.GetUserGroup = oldGetUserGroup 
 end 
 
 function meta:GetFakename() 
-	return self:GetNWString("fakename_name", self:Nick()) 
+	return self:GetNWString("fake_name", self:Nick()) 
 end 
 
 function meta:GetFakegroup() 
-	return self:GetNWString("fakename_group", self:GetUserGroup()) 
+	return self:GetNWString("fake_group", self:GetUserGroup()) 
 end 
 
 function meta:RemoveFakename() 
@@ -55,10 +71,10 @@ function meta:ClearFakename()
 end 
 
 function meta:IsFakenamed() 
-	return (self:GetNWString("fakename_name", false) or self:GetNWString("fakename_group", false))
+	return (self:GetNWString("fake_name", false) or self:GetNWString("fake_group", false))
 end 
 
-function ulx.fakename(calling_ply, name, group) 
+function ulx.fakename( calling_ply, name, group ) 
 	if !group or group == "" then 
 		group = calling_ply:GetUserGroup() 
 	end 
@@ -73,7 +89,7 @@ fakename:addParam{ type=ULib.cmds.StringArg, completes=ulx.group_names, hint="gr
 fakename:defaultAccess( ULib.ACCESS_SUPERADMIN )
 fakename:help( "Changes your in-game name and group." )
 
-function ulx.unfakename(calling_ply) 
+function ulx.unfakename( calling_ply ) 
 	if calling_ply:IsFakenamed() then 
 		calling_ply:ClearFakename() 
 		ulx.fancyLogAdmin(calling_ply, true, "#A unfakenamed") 
