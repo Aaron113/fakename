@@ -58,11 +58,11 @@ function meta:GetFakegroup()
 end 
 
 function meta:RemoveFakename() 
-	self:SetFakename(false) 
+	self:SetFakename() 
 end 
 
 function meta:RemoveFakegroup() 
-	self:SetFakegroup(false) 
+	self:SetFakegroup() 
 end 
 
 function meta:ClearFakename() 
