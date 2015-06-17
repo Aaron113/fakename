@@ -2,29 +2,36 @@
 -- Fakename by Aaron113 -- 
 -------------------------- 
 
+HOOK_MONITOR_LOW = HOOK_MONITOR_LOW or 2 -- (Ensure we don't break on older ULibs) 
+
 local meta = FindMetaTable("Player") 
 
-oldGetUserGroup = meta.GetUserGroup 
-function meta:GetUserGroup( b_realgroup ) 
-	if b_realgroup then 
-		return oldGetUserGroup(self) 
-	else  
-		return self:GetNWString("fake_group", false) or oldGetUserGroup(self)
-	end 
-end 
-newGetUserGroup = meta.GetUserGroup 
-meta.GetUserGroup = oldGetUserGroup
+-- Just in case some gamemodes overwrite name functions too (DarkRP) 
+hook.Add("Initialize", "SetupFakename", function() 
 
-local oldnick = meta.Nick 
-function meta:Nick( b_realnick ) 
-	if b_realnick then 
-		return oldnick(self) 
-	else 
-		return self:GetNWString("fake_name", false) or oldnick(self)
-	end  
-end 
-meta.Name = meta.Nick 
-meta.GetName = meta.Nick 
+	oldGetUserGroup = meta.GetUserGroup 
+	function meta:GetUserGroup( b_realgroup ) 
+		if b_realgroup then 
+			return oldGetUserGroup(self) 
+		else  
+			return self:GetNWString("fake_group", false) or oldGetUserGroup(self)
+		end 
+	end 
+	newGetUserGroup = meta.GetUserGroup 
+	meta.GetUserGroup = oldGetUserGroup
+
+	local oldnick = meta.Nick 
+	function meta:Nick( b_realnick ) 
+		if b_realnick then 
+			return oldnick(self) 
+		else 
+			return self:GetNWString("fake_name", false) or oldnick(self)
+		end  
+	end 
+	meta.Name = meta.Nick 
+	meta.GetName = meta.Nick 
+
+end, HOOK_MONITOR_LOW)
 
 function meta:RealNick() 
 	return self:Nick(true) 
